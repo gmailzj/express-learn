@@ -7,7 +7,8 @@ var bodyParser = require('body-parser');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
-var logger = require('morgan');
+
+var mysql = require('mysql');
 
 var app = express();
 
@@ -21,6 +22,7 @@ app.set('view engine', 'ejs');
 
 // uncomment after placing your favicon in /public
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -33,10 +35,25 @@ app.use(session({
     saveUninitialized: true,
 }));
 
+// app.use(function(req, res, next) {
+//     mysql.createConnection({
+//       host     : 'localhost',
+//       user     : 'root',
+//       password : '',
+//       database : 'nodejs'
+//     }, function(err, db) {
+//         if (err) return next(err);
+//         req.db = db;
+//         next();
+//     })
+// })
+
+
+// 定义静态资源
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
-app.use('/users', users);
+//app.use('/users', users);
 
 
 

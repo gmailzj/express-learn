@@ -1,5 +1,7 @@
 var express = require('express');
 var router = express.Router();
+var fs = require("fs");
+const path = require('path');
 
 var superagent = require('superagent');
 var cheerio = require('cheerio');
@@ -136,14 +138,47 @@ router.get('/async', function(req, res, next) {
                 });
 
                 console.log('final:');
-                console.log(topics);
+                //console.log(topics);
+                //res.wrete(topics);
             });
 
             
 
-            res.send(items);
+            res.write('abc');
+            res.end();
         });
 
 });
+
+router.get('/fs', function(req, res, next) {
+    console.log(__dirname, process.cwd(),process.execPath);
+    // /Users/zhoujian/Web/Nodejs/express/learn/routes 
+    // /Users/zhoujian/Web/Nodejs/express/learn 
+    // /usr/local/bin/node
+
+    var appPath = process.cwd();
+
+
+
+    // fs.readFile(appPath+'/t1.txt', 'utf8', (err, data) => {
+    //   if (err) throw err;
+    //   console.log(data);
+    //   res.write("you are welcome1!");
+    // });
+
+    fs.readFile(appPath+'/t2.txt', 'utf8', (err, data) => {
+      if (err) throw err;
+      console.log(data);
+      res.write("you are welcome2!");
+      res.end();
+    });
+
+    const URL = url.Url;
+    console.log(URL);
+    var  myURL = new URL('https://example.org/foo');
+
+    //res.send("you are welcome!");
+});
+
 
 module.exports = router;
