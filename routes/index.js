@@ -6,6 +6,37 @@ var main = require('../main');
 var eventproxy = require('eventproxy');
 
 
+// 没有挂载路径的中间件，通过该路由的每个请求都会执行该中间件
+router.use(function (req, res, next) {
+  console.log('Time router-middlewares:', Date.now());
+  next();
+});
+
+// 一个中间件栈，显示任何指向 /user/:id 的 HTTP 请求的信息
+router.use('/user/:id', function(req, res, next) {
+  console.log('Request URL:', req.originalUrl);
+  next();
+}, function (req, res, next) {
+  console.log('Request Type:', req.method);
+  next();
+});
+
+// 一个中间件栈，处理指向 的 GET 请求
+router.get('/user/:id', function (req, res, next) {
+  // 如果 user id 为 0, 跳到下一个路由   // 分支1
+  if (req.params.id == 0) next('route');
+  // 负责将控制权交给栈中下一个中间件 // 分支2
+  else next(); //
+}, function (req, res, next) {
+  // 渲染常规页面  //  分支2 'a'|'b' == 'c'
+  res.send('regular');
+});
+    
+// 处理渲染一个特殊页面 // 分支1
+router.get('/user/:id', function (req, res, next) {
+  console.log(req.params.id);
+  res.send('special');
+});
 
 router.get('/fib', function(req, res, next) {
     // http 传来的东西默认都是没有类型的，都是 String，所以我们要手动转换类型
@@ -86,8 +117,39 @@ router.get('/fs', function(req, res, next) {
     //res.render("fs");
 });
 
+router.get('/fs2', function(req, res, next) {
+
+    var appPath = process.cwd();
+    var ep = new eventproxy();
+    ep.fail(next);
+
+
+    var renderData = {};
+    renderData['data1'] = '1';
+    renderData['data2'] = '2';
+
+
+    ep.tail('tpl', 'data', function (tpl, data) {
+      // 在所有指定的事件触发后，将会被调用执行 
+      // 参数对应各自的事件名的最新数据 
+
+    });
+
+    fs.readFile(appPath+'/t1.txt', 'utf-8', function (err, content) {
+      ep.emit('tpl', content);
+    });
+
+    fs.readFile(appPath+'/t2.txt', 'utf-8', function (err, content) {
+      ep.emit('data', content);
+    });
+
+
+    res.render("fs", renderData);
+});
+
+
 /* GET home page. */
-router.get('/*', function(req, res, next) {
+router.get('/', function(req, res, next) {
     if (req.session && req.session.sign) { //检查用户是否已经登录
         console.log(req.session); //打印session的值
     } else {
@@ -97,5 +159,16 @@ router.get('/*', function(req, res, next) {
     }
     res.render('index', { title: 'Express' });
 });
+
+// router.get('/*', function(req, res, next) {
+//     if (req.session && req.session.sign) { //检查用户是否已经登录
+//         console.log(req.session); //打印session的值
+//     } else {
+//         //验证权限
+//         req.session.sign = true;
+//         req.session.name = 'session-name'
+//     }
+//     res.render('index', { title: 'Express' });
+// });
 
 module.exports = router;

@@ -150,35 +150,5 @@ router.get('/async', function(req, res, next) {
 
 });
 
-router.get('/fs', function(req, res, next) {
-    console.log(__dirname, process.cwd(),process.execPath);
-    // /Users/zhoujian/Web/Nodejs/express/learn/routes 
-    // /Users/zhoujian/Web/Nodejs/express/learn 
-    // /usr/local/bin/node
-
-    var appPath = process.cwd();
-
-
-
-    // fs.readFile(appPath+'/t1.txt', 'utf8', (err, data) => {
-    //   if (err) throw err;
-    //   console.log(data);
-    //   res.write("you are welcome1!");
-    // });
-
-    fs.readFile(appPath+'/t2.txt', 'utf8', (err, data) => {
-      if (err) throw err;
-      console.log(data);
-      res.write("you are welcome2!");
-      res.end();
-    });
-
-    const URL = url.Url;
-    console.log(URL);
-    var  myURL = new URL('https://example.org/foo');
-
-    //res.send("you are welcome!");
-});
-
 
 module.exports = router;
