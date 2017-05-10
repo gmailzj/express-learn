@@ -2,6 +2,8 @@ var express = require('express');
 var router = express.Router();
 var fs = require("fs");
 const path = require('path');
+var moment = require('moment');
+
 
 var superagent = require('superagent');
 var cheerio = require('cheerio');
@@ -10,9 +12,36 @@ var async = require("async");
 
 var url = require('url');
 
+router.use(function(req, res, next){
+	console.log(__filename)
+	res.setHeader('Content-Type', 'text/html; charset=utf-8');
+	next();
+})
 /* GET users listing. */
 router.get('/', function(req, res, next) {
-    res.send('respond with a resource');
+    // 使用res.write 以后不能再使用  res.send 和 res.render, 但是最终要使用res.end
+    //res.write('respond with a resource');
+    //res.write('respond with a resource');
+    
+    // 添加到header头
+    //res.append('Warning', '199 Miscellaneous warning');
+
+    // 用res.send 以后不能再用res.end('内容') ,Can't set headers after they are sent.
+    //res.send({ user: 'tobi' });
+    //res.send('send');
+    
+    /*
+    The body parameter can be a Buffer object, a String, an object, or an Array. For example:
+    res.send(new Buffer('whoop'));
+    res.send({ some: 'json' });
+    res.send('<p>some html</p>');
+    res.status(404).send('Sorry, we cannot find that!');
+    res.status(500).send({ error: 'something blew up' });
+    */
+   
+    res.end("\n end")
+    //res.end();
+    //res.render("fs")
 });
 
 var cnodeUrl = 'https://cnodejs.org/';
