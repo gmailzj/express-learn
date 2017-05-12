@@ -13,6 +13,110 @@ router.use(function(req, res, next) {
     next();
 });
 
+// router.get('/', function(req, res, next) {
+//     res.setHeader('Content-Type', 'text/html; charset=utf-8');
+//     next();
+// });
+
+/* GET home page. */
+router.get('/', function(req, res, next) {
+    if (req.session && req.session.sign) { //检查用户是否已经登录
+        //console.log(req.session); //打印session的值
+    } else {
+        //验证权限
+        req.session.sign = true;
+        req.session.name = 'session-name'
+    }
+    //res.render('index', { title: 'Express' });
+    // res.type('.html');
+    // res.write('hello')
+    // res.end();
+    res.status(403).end('403 forbidden');
+    // res.status(400).send('Bad Request');
+    // res.status(404).sendFile('/absolute/path/to/404.png');
+
+});
+
+router.get('/redis', function(req, res, next) {
+    var redis = require('redis');
+    var client = redis.createClient('6379', '127.0.0.1');
+
+    /*
+    redis.createClient([options])
+    redis.createClient(unix_socket[, options])
+    redis.createClient(redis_url[, options])
+    redis.createClient(port[, host][, options])
+    */
+
+    // redis 链接错误
+    client.on("error", function(error) {
+        console.log(error);
+    });
+    // redis 验证 (reids.conf未开启验证，此项可不需要)
+    // client.auth("password");
+    // client.set("cache-title", "redis cached title");
+    // client.hset("hash key", "hashtest 1", "value 1", redis.print);
+    // client.hset(["hash key", "hashtest 2", "value 2"], redis.print);
+    // client.hset("hash key", "hashtest 3", "value 3", redis.print);
+    // client.hkeys("hash key", function(err, replies) {
+    //     console.log(replies.length + " replies:");
+    //     replies.forEach(function(reply, i) {
+    //         console.log("    " + i + ": " + reply);
+    //     });
+    //     client.quit();
+    // });
+
+    var ep = new eventproxy();
+    ep.fail(next);
+
+    var renderData = {};
+    ep.tail('cacheOne', 'cacheTwo', function(cacheOne, cacheTwo) {
+        // 在所有指定的事件触发后，将会被调用执行 
+        // 参数对应各自的事件名的最新数据 
+        console.log(cacheOne, cacheTwo)
+        renderData.cacheOne = cacheOne;
+        renderData.cacheTwo = cacheTwo;
+        res.send(renderData);
+        client.incr("pv")
+    });
+
+    // 获取title
+    client.get("title", function(err, ret) {
+        console.log(ret)
+        var defaultVal = 'hello',
+            retVal;
+        if (ret == null) { // 找不到缓存的时候去查询文件
+            // retVal = defaultVal //  类似查询文件 又要回调 How?
+            fs.readFile("t1.txt", 'utf-8', function(err, content) {
+                retVal = content
+                client.set("title", retVal);
+                ep.emit('cacheOne', retVal);
+            })
+
+        } else {
+            retVal = ret;
+            ep.emit('cacheOne', retVal);
+        }
+
+    });
+
+    // 获取subtitle
+    client.get("subTitle", function(err, ret) {
+        console.log(ret)
+        var defaultVal = 'world',
+            retVal;
+        if (ret == null) {
+            retVal = defaultVal
+            client.set("subTitle", retVal);
+        } else {
+            retVal = ret;
+        }
+        ep.emit('cacheTwo', retVal);
+    });
+
+
+})
+
 // 一个中间件栈，显示任何指向 /user/:id 的 HTTP 请求的信息
 router.use('/user/:id', function(req, res, next) {
     console.log('Request URL:', req.originalUrl);
@@ -76,15 +180,42 @@ router.get('/mysql', function(req, res, next) {
         console.log('connected as id ' + connection.threadId);
     });
 
+
+
+    // var ep = EventProxy.create('tpl', 'data', function (tpl, data) {
+    //     // TODO
+    // });
+    // 等效于上面的
+    // var ep = new EventProxy();
+    // ep.all('tpl', 'data', function (tpl, data) {
+    // // TODO
+    // });
+
+    var ep = new eventproxy();
+    ep.fail(next);
+
+    ep.all("queryAdmin", function() {
+
+    })
+    console.log('list: %j \n', ep);
+
+    const count = 5;
+    console.log('count: %d', count);
     // 查询
     connection.query('SELECT 1 + 1 AS solution', function(error, results, fields) {
         if (error) throw error;
         console.log('The solution is: ', results[0].solution);
     });
 
+
+    connection.query('SELECT * FROM admin', function(error, results, fields) {
+        if (error) throw error;
+        console.log(results);
+        res.jsonp(results)
+    })
     connection.end();
 
-    res.send("mysql")
+    // res.send("mysql")
 });
 
 
@@ -151,23 +282,7 @@ router.get('/fs2', function(req, res, next) {
 });
 
 
-router.get('/', function(req, res, next) {
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
-    next();
-});
-/* GET home page. */
-router.get('/', function(req, res, next) {
-    if (req.session && req.session.sign) { //检查用户是否已经登录
-        //console.log(req.session); //打印session的值
-    } else {
-        //验证权限
-        req.session.sign = true;
-        req.session.name = 'session-name'
-    }
-    //res.render('index', { title: 'Express' });
-    res.write('hello')
-    res.end();
-});
+
 
 // router.get('/*', function(req, res, next) {
 //     if (req.session && req.session.sign) { //检查用户是否已经登录

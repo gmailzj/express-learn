@@ -5,6 +5,8 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 var fs = require("fs");
+var fileStreamRotator = require('file-stream-rotator');
+var uuid = require('uuid');
 
 var routes = require('./routes/index');
 var users = require('./routes/users');
@@ -14,6 +16,7 @@ var mysql = require('mysql');
 var app = express();
 
 var session = require('express-session');
+// var RedisStrore = require('connect-redis')(session);
 
 // 定义静态资源访问
 app.use(express.static(__dirname + '/public'));
@@ -58,10 +61,12 @@ app.set('trust proxy', function(ip) {
 
 
 //app.set("case sensitive routing", true)
-app.enable("case sensitive routing")
-    //console.log(app.get("case sensitive routing"))
-    //console.log(app.enabled("case sensitive routing"))
+app.enable("case sensitive routing");
+// console.log(app.get("case sensitive routing"))
+// console.log(app.enabled("case sensitive routing"))
 
+//  设置jsonp的参数key，默认为callback
+app.set("jsonp callback name", "callback");
 app.disable("x-powered-by")
 
 // strict routing   启用/禁用严格的路由，如/home和/home/是不一样的，默认为disabled
@@ -77,10 +82,36 @@ app.set("title", "abc");
 //app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 // 写到日志文件里面
-var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
-app.use(logger('combined', { stream: accessLogStream }))
+// var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
 
-// 在终端中显示日志
+
+// 按每天新建一个日志文件
+var logDir = path.join(__dirname, 'logs');
+// ensure log directory exists
+// fs.existsSync(logDir) || fs.mkdirSync(logDir);
+// create a rotating write stream
+var accessLogStream = fileStreamRotator.getStream({
+    date_format: 'YYYYMMDD',
+    filename: path.join(logDir, 'access-%DATE%.log'),
+    frequency: 'daily',
+    verbose: true
+});
+// app.use(logger('combined', { stream: accessLogStream }))
+
+// 日志添加自定义字段
+// logger.token('id', function(req) {
+//     return req.id;
+// });
+
+// function assignId(req, res, next) {
+//     req.id = uuid.v4();
+//     next();
+// };
+
+// app.use(assignId);
+// app.use(logger(':id :method :url :response-time ms'));
+
+// 在终端中显示访问日志
 app.use(logger('dev'));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -140,7 +171,7 @@ app.use(function(req, res, next) {
     console.log("all request middlewares")
 
     // 设置编码
-    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    // res.setHeader('Content-Type', 'text/html; charset=utf-8');
     next();
 })
 app.use('/', routes);
