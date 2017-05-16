@@ -194,13 +194,10 @@ router.get('/mysql', function(req, res, next) {
     var ep = new eventproxy();
     ep.fail(next);
 
-    ep.all("queryAdmin", function() {
-
+    ep.tail("queryAdmin", function(result) {
+        res.jsonp(result)
     })
-    console.log('list: %j \n', ep);
 
-    const count = 5;
-    console.log('count: %d', count);
     // 查询
     connection.query('SELECT 1 + 1 AS solution', function(error, results, fields) {
         if (error) throw error;
@@ -210,8 +207,7 @@ router.get('/mysql', function(req, res, next) {
 
     connection.query('SELECT * FROM admin', function(error, results, fields) {
         if (error) throw error;
-        console.log(results);
-        res.jsonp(results)
+        ep.emit("queryAdmin", results);
     })
     connection.end();
 
@@ -263,7 +259,7 @@ router.get('/fs2', function(req, res, next) {
     renderData['data2'] = '2';
 
 
-    ep.tail('tpl', 'data', function(tpl, data) {
+    ep.all('tpl', 'data', function(tpl, data) {
         // 在所有指定的事件触发后，将会被调用执行 
         // 参数对应各自的事件名的最新数据 
 
