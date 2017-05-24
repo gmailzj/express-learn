@@ -91,8 +91,8 @@ function onError(error) {
  */
 
 function onListening() {
-    debug(process.env)
-        // debug(util.inspect(util, { showHidden: true, depth: 4 }));
+    // debug(process.env)
+    // debug(util.inspect(util, { showHidden: true, depth: 4 }));
     var addr = server.address();
     var bind = typeof addr === 'string' ?
         'pipe ' + addr :

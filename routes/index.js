@@ -6,6 +6,19 @@ var main = require('../main');
 var eventproxy = require('eventproxy');
 var moment = require("moment");
 
+var config = require('config');
+
+var app_path = global.app_path;
+
+
+// 读取公共数据  1种是用户配置文件  2种全局变量
+var dbConfig = config.get('Customer.dbConfig');
+console.log(dbConfig)
+var utils = require(path.resolve(app_path, "./modules/utils"));
+console.log(utils.title);
+var common = require(path.resolve(app_path, "./modules/common"));
+console.log(common);
+
 // 没有挂载路径的中间件，通过该路由的每个请求都会执行该中间件
 router.use(function(req, res, next) {
     console.log('router-middlewares Time:', Date.now());
@@ -35,6 +48,14 @@ router.get('/', function(req, res, next) {
     // res.status(400).send('Bad Request');
     // res.status(404).sendFile('/absolute/path/to/404.png');
 
+});
+
+
+router.get("/require", function(req, res, next) {
+
+
+    res.write('hello');
+    res.end();
 });
 
 router.get('/redis', function(req, res, next) {

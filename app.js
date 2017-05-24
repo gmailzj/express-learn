@@ -8,12 +8,21 @@ var fs = require("fs");
 var fileStreamRotator = require('file-stream-rotator');
 var uuid = require('uuid');
 
+// 全局变量
+//  根目录
+global.app_path = __dirname;
+
+// 下面的模块有用到上面的全局变量
 var routes = require('./routes/index');
 var users = require('./routes/users');
 
 var mysql = require('mysql');
 
 var app = express();
+
+//console.log(app.locals);
+
+
 
 var session = require('express-session');
 // var RedisStrore = require('connect-redis')(session);
@@ -90,12 +99,12 @@ var logDir = path.join(__dirname, 'logs');
 // ensure log directory exists
 // fs.existsSync(logDir) || fs.mkdirSync(logDir);
 // create a rotating write stream
-var accessLogStream = fileStreamRotator.getStream({
-    date_format: 'YYYYMMDD',
-    filename: path.join(logDir, 'access-%DATE%.log'),
-    frequency: 'daily',
-    verbose: true
-});
+// var accessLogStream = fileStreamRotator.getStream({
+//     date_format: 'YYYYMMDD',
+//     filename: path.join(logDir, 'access-%DATE%.log'),
+//     frequency: 'daily',
+//     verbose: true
+// });
 // app.use(logger('combined', { stream: accessLogStream }))
 
 // 日志添加自定义字段
@@ -219,7 +228,8 @@ app.use(function(err, req, res, next) {
 
 
 // 测试代码
-
-//console.log(app.get("env"))
-
+// NODE_ENV 如果没有设置的时候默认为 development
+console.log(app.get("env"))
+console.log(process.env.NODE_ENV);
+console.log(global.app_path);
 module.exports = app;
