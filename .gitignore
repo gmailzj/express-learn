@@ -14,7 +14,9 @@ pids
 logs
 results
 
-node_modules
+/node_modules/*
+!/node_modules/express/
+
 npm-debug.log
 coverage
 .DS_Store
