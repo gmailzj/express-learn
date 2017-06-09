@@ -1,34 +1,55 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
-var fs = require("fs");
-var fileStreamRotator = require('file-stream-rotator');
-var uuid = require('uuid');
+const express = require('express');
+const path = require('path');
+// const favicon = require('serve-favicon');
+let logger = require('morgan');
+const cookieParser = require('cookie-parser');
+const bodyParser = require('body-parser');
+// const fs = require('fs');
+// const fileStreamRotator = require('file-stream-rotator');
+// const uuid = require('uuid');
+// const config = require('config');
 
-// 全局变量
+// 设置全局变量
 //  根目录
 global.app_path = __dirname;
 
+// 如果是开发环境，重写console便于调试 可以显示文件和行号
+// require('debug-trace')({
+//     always: true
+// });
+
+// 读取公共数据  1种是用户配置文件  2种全局变量
+// const dbConfig = config.get('Customer.dbConfig');
+// console.log(dbConfig);
+
+
 // 下面的模块有用到上面的全局变量
-var routes = require('./routes/index');
-var users = require('./routes/users');
+const routes = require('./routes/index');
+const users = require('./routes/users');
 
-var mysql = require('mysql');
+// const mysql = require('mysql');
 
-var app = express();
+const app = express();
 
-//console.log(app.locals);
+// app.locals The app.locals object is a JavaScript object, and its properties are local variables within the application
+// 设置app.locals变量，数据可以通过这个来传递、读取
+app.locals.title = 'app-title-app.locals';
 
 
+// app.locals.strftime = require('strftime');
+app.locals.email = 'me@myapp.com';
+// console.log(app.locals);
 
-var session = require('express-session');
+const strftime = require('strftime');
+
+console.log(strftime('%B %d, %Y %H:%M:%S')); // => April 28, 2011 18:21:08
+// console.log(strftime('%F %T', new Date(1307472705067))); // => 2011-06-07 18:51:45
+
+const session = require('express-session');
 // var RedisStrore = require('connect-redis')(session);
 
 // 定义静态资源访问
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(path.resolve(__dirname, '/public')));
 
 // 终端http请求格式
 // app.use(logger('This is a customer format. :method :url :status :response-time ms'));
@@ -39,11 +60,13 @@ app.set('view engine', 'ejs');
 
 /* Boolean
 If true, the client's IP address is understood as the left-most entry in the X-Forwarded-* header.
-If false, the app is understood as directly facing the Internet and the client's IP address is derived from req.connection.remoteAddress. This is the default setting.
+If false, the app is understood as directly facing the Internet and
+the client's IP address is derived from req.connection.remoteAddress. This is the default setting.
 */
-app.set('trust proxy', true)
-    /* IP addresses
-An IP address, subnet, or an array of IP addresses, and subnets to trust. The following is the list of pre-configured subnet names.
+app.set('trust proxy', true);
+/** IP addresses
+ * An IP address, subnet, or an array of IP addresses, and subnets to trust.
+The following is the list of pre-configured subnet names.
 loopback - 127.0.0.1/8, ::1/128
 linklocal - 169.254.0.0/16, fe80::/10
 uniquelocal - 10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16, fc00::/7
@@ -52,12 +75,12 @@ app.set('trust proxy', 'loopback') // specify a single subnet
 app.set('trust proxy', 'loopback, 123.123.123.123') // specify a subnet and an address
 app.set('trust proxy', 'loopback, linklocal, uniquelocal') // specify multiple subnets as CSV
 app.set('trust proxy', ['loopback', 'linklocal', 'uniquelocal']) // specify multiple subnets as an array
-  */
-    //app.set('trust proxy', 'loopback')
+ */
 
-/* Number
-Number	Trust the nth hop from the front-facing proxy server as the client.
-*/
+// app.set('trust proxy', 'loopback')
+
+// Number   Trust the nth hop from the front-facing proxy server as the client.
+
 /* Function
 Function Custom trust implementation.Use this only
 if you know what you are doing.
@@ -66,17 +89,17 @@ app.set('trust proxy', function(ip) {
     else return false;
 })
 */
-//env Environment mode, defaults to process.env.NODE_ENV (NODE_ENV environment variable) or "development".
+// env Environment mode, defaults to process.env.NODE_ENV (NODE_ENV environment variable) or "development".
 
 
-//app.set("case sensitive routing", true)
-app.enable("case sensitive routing");
+// app.set("case sensitive routing", true)
+app.enable('case sensitive routing');
 // console.log(app.get("case sensitive routing"))
 // console.log(app.enabled("case sensitive routing"))
 
 //  设置jsonp的参数key，默认为callback
-app.set("jsonp callback name", "callback");
-app.disable("x-powered-by")
+app.set('jsonp callback name', 'callback');
+app.disable('x-powered-by')
 
 // strict routing   启用/禁用严格的路由，如/home和/home/是不一样的，默认为disabled
 // view cache  启用/禁用视图模板编译缓存，默认为enabled
@@ -85,17 +108,17 @@ app.disable("x-powered-by")
 
 // 用户自定义配置
 app.set("title", "abc");
-//console.log(app.get("title"))
+// console.log(app.get("title"))
 
 // uncomment after placing your favicon in /public
-//app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
+// app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 
 // 写到日志文件里面
 // var accessLogStream = fs.createWriteStream(path.join(__dirname, 'access.log'), { flags: 'a' })
 
 
 // 按每天新建一个日志文件
-var logDir = path.join(__dirname, 'logs');
+// const logDir = path.join(__dirname, 'logs');
 // ensure log directory exists
 // fs.existsSync(logDir) || fs.mkdirSync(logDir);
 // create a rotating write stream
@@ -121,13 +144,35 @@ var logDir = path.join(__dirname, 'logs');
 // app.use(logger(':id :method :url :response-time ms'));
 
 // 在终端中显示访问日志
-app.use(logger('dev'));
+// app.use(logger('dev'));
+
+// log4js 日志
+const log4js = require('log4js');
+
+log4js.configure({
+    appenders: [
+        // 控制台输出
+        { type: 'console' },
+        {
+            // 文件输出
+            type: 'file',
+            filename: 'logs/access.log',
+            maxLogSize: 1024,
+            backups: 3,
+            category: 'normal',
+        }
+    ]
+});
+logger = log4js.getLogger('normal');
+logger.setLevel('INFO');
+// app.use(log4js.connectLogger(logger, { level: log4js.levels.INFO }));
+
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 // session
 app.use(session({
-    secret: 'abcdef', //secret的值建议使用随机字符串
+    secret: 'abcdef', //  secret的值建议使用随机字符串
     cookie: { maxAge: 60 * 1000 * 30 }, // 过期时间（毫秒）
     resave: false,
     saveUninitialized: true,
@@ -158,7 +203,6 @@ app.use(function(req, res, next) {
 });
 
 
-
 // 一个中间件栈，处理指向 /user/:id 的 GET 请求
 // app.get('/fib', function (req, res, next) {
 //   // 如果 user id 为 0, 跳到下一个路由
@@ -176,35 +220,37 @@ app.use(function(req, res, next) {
 
 // 设置路由信息
 
+// 所有的请求都要通过个中间件
 app.use(function(req, res, next) {
-    console.log("all request middlewares")
-
+    res.setHeader('ver', '1.0.0');
     // 设置编码
     // res.setHeader('Content-Type', 'text/html; charset=utf-8');
     next();
 })
+
+// 配置路由
 app.use('/', routes);
 app.use('/users', users);
 
 
 
+// 异常处理
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
+    console.log("404")
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
 });
 
-// error handlers
-//console.log(app.get('etag'));
-
 // development error handler
 // will print stacktrace
 // app.get('env'), 获取当前用户环境变量中NODE_ENV值；
 // NODE_ENV=development node  ./bin/www
+// 如果是开发环境，则向页面输出错误堆栈信息，同时下面的错误中间件就不会触发了
 if (app.get('env') === 'development') {
-    app.use(function(err, req, res, next) {
-        console.log(err.message);
+    app.use(function(err, req, res, next) { // next 参数很关键，如果没有，页面的错误会没有样式
+        console.log("404 错误")
         res.status(err.status || 500);
         res.render('error', {
             message: err.message,
@@ -212,13 +258,16 @@ if (app.get('env') === 'development') {
         });
     });
 
-    //下面的错误就不会触发了
+    // 下面的错误就不会触发了
 }
 
+// 如果是非开发环境，则向页面输出简单错误信息
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res, next) {
-    console.log(err.message);
+app.use(function(err, req, res) {
+    // if (res.headersSent) {
+    //     next(err);
+    // }
     res.status(err.status || 500);
     res.render('error', {
         message: err.message,
