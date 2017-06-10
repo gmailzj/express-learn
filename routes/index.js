@@ -57,8 +57,9 @@ router.get('/', function(req, res) {
 });
 
 router.get("/200", function(req, res) {
-    throw new Error('Catch me');
-    // res.send('200');
+    var ok = req.params.ok;
+    // throw new Error('Catch me');
+    res.send('200');
 });
 router.get("/about", function(req, res) {
     /**

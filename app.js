@@ -14,9 +14,9 @@ const bodyParser = require('body-parser');
 global.app_path = __dirname;
 
 // 如果是开发环境，重写console便于调试 可以显示文件和行号
-// require('debug-trace')({
-//     always: true
-// });
+require('debug-trace')({
+    always: true
+});
 
 // 读取公共数据  1种是用户配置文件  2种全局变量
 // const dbConfig = config.get('Customer.dbConfig');
@@ -269,16 +269,21 @@ app.use(function(err, req, res) {
     //     next(err);
     // }
     res.status(err.status || 500);
-    res.render('error', {
-        message: err.message,
-        error: {}
-    });
+    if (req.xhr) {
+        res.send({ code: err.status, message: err.message });
+    } else {
+        res.render('error', {
+            message: err.message,
+            error: {}
+        });
+    }
+
 });
 
 
 // 测试代码
 // NODE_ENV 如果没有设置的时候默认为 development
-console.log(app.get("env"))
-console.log(process.env.NODE_ENV);
-console.log(global.app_path);
+// console.log(app.get("env"))
+// console.log(process.env.NODE_ENV);
+// console.log(global.app_path);
 module.exports = app;

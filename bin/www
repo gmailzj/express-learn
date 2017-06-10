@@ -38,6 +38,11 @@ process.argv.forEach((val, index) => {
     //console.log(`${index}: ${val}`);
 });
 
+// uncaughtException事件
+process.on('uncaughtException', (err) => {
+    console.log(`Caught exception: ${err} and stack trace is: ${err.stack}`);
+});
+
 /**
  * Normalize a port into a number, string, or false.
  */

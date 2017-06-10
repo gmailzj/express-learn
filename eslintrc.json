@@ -1,0 +1,22 @@
+{
+    "extends": "airbnb",
+    // "extends": "eslint:recommended",
+    "plugins": [
+        "standard",
+        "promise"
+    ],
+    "rules": {
+        "semi": [0, "always"], // error => off warn error
+        "quotes": ["off", "single"], // double
+        "indent": ["error", 4],
+        // "no-console": [0, { "allow": ["warn", "error", "log"] }],
+        "no-console": "off",
+        "max-len": [0, "150"],
+        // "comma-dangle": ["error", "never"],
+        "comma-dangle": "off",
+        "eol-last": "off",
+        "func-names": ["error", "never"],
+        "space-before-function-paren": ["error", "never"],
+        "prefer-arrow-callback": "off"
+    }
+}
