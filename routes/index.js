@@ -56,6 +56,10 @@ router.get('/', function(req, res) {
 
 });
 
+router.get("/test", function(req, res) {
+    res.end('test');
+})
+
 router.get("/200", function(req, res) {
     var ok = req.params.ok;
     // throw new Error('Catch me');
@@ -76,6 +80,9 @@ router.get("/about", function(req, res) {
     // 2. req.query
     // 3. req.params
     // 4. req.param()
+
+    // 其中req.body ，必须要在使用了body-parsing middleware中间件以后才有，
+    // 比如 body-parser and multer.
 
     var id = req.query.id;
 
