@@ -11,6 +11,9 @@ const moment = require("moment");
 const redis = require('redis');
 const mysql = require('mysql');
 const querystring = require('querystring');
+const ipip = require("../modules/ip");
+
+ipip.load("/Users/zhoujian/Downloads/17monipdb/17monipdb.dat");
 // const request = require('request');
 
 // const config = require('config');
@@ -24,6 +27,23 @@ var common = require(path.resolve(app_path, "./modules/common"));
 common.config = {};
 // console.log(common);
 
+router.get("/ip2/:ip", function(req, res) {
+
+
+    var ip = req.params.ip || "14.215.177.37";
+    res.send(ipip.findSync(ip))
+})
+
+router.get("/ip/:ip", function(req, res) {
+    var maxmind = require('maxmind');
+    var ip = req.params.ip;
+    maxmind.open('/Users/zhoujian/Downloads/db', (err, cityLookup) => {
+        // var city = cityLookup.get('121.35.101.34');
+        var city = cityLookup.get(ip);
+        console.log(city);
+        res.json(city);
+    });
+})
 
 // 没有挂载路径的中间件，通过该路由的每个请求都会执行该中间件
 router.use(function(req, res, next) {

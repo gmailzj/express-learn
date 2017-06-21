@@ -8,7 +8,8 @@
     "rules": {
         "semi": [0, "always"], // error => off warn error
         "quotes": ["off", "single"], // double
-        "indent": ["error", 4],
+        // "indent": ["error", 4],
+        "indent": "off",
         // "no-console": [0, { "allow": ["warn", "error", "log"] }],
         "no-console": "off",
         "max-len": [0, "150"],
@@ -17,6 +18,10 @@
         "eol-last": "off",
         "func-names": ["error", "never"],
         "space-before-function-paren": ["error", "never"],
-        "prefer-arrow-callback": "off"
+        "prefer-arrow-callback": "off",
+        "prefer-const": "off",
+        "no-shadow": "off",
+        "prefer-template": "off",
+        "no-use-before-define": "warn"
     }
 }

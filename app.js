@@ -232,8 +232,6 @@ app.use(function(req, res, next) {
 app.use('/', routes);
 app.use('/users', users);
 
-
-
 // 异常处理
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -270,7 +268,7 @@ app.use(function(err, req, res) {
     // }
     res.status(err.status || 500);
     if (req.xhr) {
-        res.send({ code: err.status, message: err.message });
+
     } else {
         res.render('error', {
             message: err.message,
