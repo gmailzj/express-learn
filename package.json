@@ -26,6 +26,7 @@
     "mysql": "^2.13.0",
     "qs": "^6.4.0",
     "redis": "^2.7.1",
+    "response-time": "^2.3.2",
     "serve-favicon": "~2.3.0",
     "session": "^0.1.0",
     "strftime": "^0.10.0",

@@ -4,6 +4,9 @@ const path = require('path');
 let logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
+const domain = require('domain');
+const responseTime = require('response-time');
+
 // const fs = require('fs');
 // const fileStreamRotator = require('file-stream-rotator');
 // const uuid = require('uuid');
@@ -26,6 +29,8 @@ require('debug-trace')({
 // 下面的模块有用到上面的全局变量
 const routes = require('./routes/index');
 const users = require('./routes/users');
+const routeRedis = require('./routes/redis');
+const routeMysql = require('./routes/mysql');
 
 // const mysql = require('mysql');
 
@@ -47,6 +52,32 @@ console.log(strftime('%B %d, %Y %H:%M:%S')); // => April 28, 2011 18:21:08
 
 const session = require('express-session');
 // var RedisStrore = require('connect-redis')(session);
+
+// app.use((req, res, next) => {
+//     const reqDomain = domain.create();
+//     // next抛出的异常在这里被捕获,触发此事件
+//     reqDomain.on('error', e => {
+//         // ... 这里统一处理错误，比如渲染或跳转到404，500页面
+//     });
+//     return reqDomain.run(next);
+// });
+
+// app.use(function(req, res, next) {
+//     let d = domain.create();
+//     // 监听domain的错误事件
+//     d.on('error', function(err) {
+//         res.statusCode = 500;
+//         res.json({ sucess: false, messag: '服务器异常' });
+//         d.dispose();
+//     });
+
+//     d.add(req);
+//     d.add(res);
+//     d.run(next);
+// });
+
+// 发送响应头 本次请求花费时间
+app.use(responseTime());
 
 // 定义静态资源访问
 app.use(express.static(path.resolve(__dirname, '/public')));
@@ -144,27 +175,27 @@ app.set("title", "abc");
 // app.use(logger(':id :method :url :response-time ms'));
 
 // 在终端中显示访问日志
-// app.use(logger('dev'));
+app.use(logger('dev'));
 
 // log4js 日志
-const log4js = require('log4js');
+// const log4js = require('log4js');
 
-log4js.configure({
-    appenders: [
-        // 控制台输出
-        { type: 'console' },
-        {
-            // 文件输出
-            type: 'file',
-            filename: 'logs/access.log',
-            maxLogSize: 1024,
-            backups: 3,
-            category: 'normal',
-        }
-    ]
-});
-logger = log4js.getLogger('normal');
-logger.setLevel('INFO');
+// log4js.configure({
+//     appenders: [
+//         // 控制台输出
+//         { type: 'console' },
+//         {
+//             // 文件输出
+//             type: 'file',
+//             filename: 'logs/access.log',
+//             maxLogSize: 1024,
+//             backups: 3,
+//             category: 'normal',
+//         }
+//     ]
+// });
+// logger = log4js.getLogger('normal');
+// logger.setLevel('INFO');
 // app.use(log4js.connectLogger(logger, { level: log4js.levels.INFO }));
 
 app.use(bodyParser.json());
@@ -231,12 +262,14 @@ app.use(function(req, res, next) {
 // 配置路由
 app.use('/', routes);
 app.use('/users', users);
+app.use('/redis', routeRedis);
+app.use('/mysql', routeMysql);
 
 // 异常处理
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
     console.log("404")
-    var err = new Error('Not Found');
+    let err = new Error('Not Found');
     err.status = 404;
     next(err);
 });
@@ -248,7 +281,9 @@ app.use(function(req, res, next) {
 // 如果是开发环境，则向页面输出错误堆栈信息，同时下面的错误中间件就不会触发了
 if (app.get('env') === 'development') {
     app.use(function(err, req, res, next) { // next 参数很关键，如果没有，页面的错误会没有样式
-        console.log("404 错误")
+        if (res.headersSent) {
+            return next(err);
+        }
         res.status(err.status || 500);
         res.render('error', {
             message: err.message,
@@ -268,14 +303,13 @@ app.use(function(err, req, res) {
     // }
     res.status(err.status || 500);
     if (req.xhr) {
-
+        res.status(500).send({ error: 'Something wrong!' });
     } else {
         res.render('error', {
             message: err.message,
             error: {}
         });
     }
-
 });
 
 

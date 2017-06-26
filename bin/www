@@ -38,7 +38,11 @@ process.argv.forEach((val, index) => {
     console.log(`${index}: ${val}`);
 });
 
-// uncaughtException事件
+// uncaughtException事件  NodeJS 进程的一个事件。
+// 如果进程里产生了一个异常而没有被任何Try Catch捕获会触发这个事件
+// NodeJS 对于未捕获异常的默认处理是
+// - 触发 uncaughtException 事件 - 如果 uncaughtException 没有被监听，那么 - 打印异常的堆栈信息 - 触发进程的 exit 事件
+
 process.on('uncaughtException', (err) => {
     console.log(`Caught exception: ${err} and stack trace is: ${err.stack}`);
 });

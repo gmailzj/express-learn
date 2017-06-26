@@ -22,6 +22,8 @@
         "prefer-const": "off",
         "no-shadow": "off",
         "prefer-template": "off",
-        "no-use-before-define": "warn"
+        "no-use-before-define": "warn",
+        "object-shorthand": "off",
+        "consistent-return": "off"
     }
 }
