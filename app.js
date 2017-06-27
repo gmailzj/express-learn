@@ -4,8 +4,8 @@ const path = require('path');
 let logger = require('morgan');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
-const domain = require('domain');
 const responseTime = require('response-time');
+const domain = require("domain");
 
 // const fs = require('fs');
 // const fileStreamRotator = require('file-stream-rotator');
@@ -62,19 +62,22 @@ const session = require('express-session');
 //     return reqDomain.run(next);
 // });
 
-// app.use(function(req, res, next) {
-//     let d = domain.create();
-//     // 监听domain的错误事件
-//     d.on('error', function(err) {
-//         res.statusCode = 500;
-//         res.json({ sucess: false, messag: '服务器异常' });
-//         d.dispose();
-//     });
+// 使用domain 来处理异常
+app.use(function(req, res, next) {
+    let d = domain.create();
+    // 监听domain的错误事件
+    d.on('error', function(err) {
+        // 记录到日志 未实现
+        // console.error(err.messag);
+        res.statusCode = 500;
+        res.json({ sucess: false, messag: '服务器异常' });
+        d.dispose();
+    });
 
-//     d.add(req);
-//     d.add(res);
-//     d.run(next);
-// });
+    d.add(req);
+    d.add(res);
+    d.run(next);
+});
 
 // 发送响应头 本次请求花费时间
 app.use(responseTime());

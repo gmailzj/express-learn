@@ -3,8 +3,11 @@ const mysql = require('mysql');
 const Eventproxy = require('eventproxy');
 
 const router = express.Router();
+router.get('/', function(req, res, next) {
+    res.end("this is mysql root");
+});
 
-router.get('/mysql', function(req, res, next) {
+router.get('/api', function(req, res, next) {
     // http 传来的东西默认都是没有类型的，都是 String，所以我们要手动转换类型
     const connection = mysql.createConnection({
         host: 'localhost',

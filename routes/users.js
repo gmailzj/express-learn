@@ -39,7 +39,7 @@ router.get('/', function(req, res, next) {
     res.status(500).send({ error: 'something blew up' });
     */
 
-    res.end("end");
+    res.end("users-index");
     // res.end();
     // res.render("fs")
 });
@@ -108,7 +108,7 @@ router.get('/list', function(req, res, next) {
 });
 
 // 一个中间件栈，显示任何指向 /user/:id 的 HTTP 请求的信息
-router.use('/:id', function(req, res, next) {
+router.use(/\d+/, function(req, res, next) {
     console.log('Request URL:', req.originalUrl);
     next();
 }, function(req, res, next) {
@@ -117,9 +117,11 @@ router.use('/:id', function(req, res, next) {
 });
 
 // 一个中间件栈，处理指向 的 GET 请求
-router.get('/:id', function(req, res, next) {
+router.get(/(\d+)/, function(req, res, next) {
     // 如果 user id 为 0, 跳到下一个路由   // 分支1
-    let id = parseInt(req.params.id, 10);
+    console.log(req.params);
+    // 如果是正则，需要用到分组
+    let id = parseInt(req.params["0"], 10);
     if (id === 0) next('route');
     // 负责将控制权交给栈中下一个中间件 // 分支2
     // 渲染常规页面  //  分支2 'a'|'b' == 'c'
@@ -130,7 +132,7 @@ router.get('/:id', function(req, res, next) {
 });
 
 // 处理渲染一个特殊页面 // 分支1
-router.get('/:id', function(req, res) {
+router.get(/\d+/, function(req, res) {
     console.log(req.params.id);
     res.send('special');
 });
@@ -210,14 +212,12 @@ router.get('/async', function(req, res, next) {
                 });
 
                 console.log('final:');
-                //console.log(topics);
-                //res.wrete(topics);
+                // console.log(topics);
+                res.send(topics);
             });
 
-
-
-            res.write('abc');
-            res.end();
+            // res.write('abc');
+            // res.end();
         });
 
 });
