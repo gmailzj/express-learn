@@ -1,6 +1,6 @@
 var fibonacci = function(n) {
 
-	n = parseInt(n, 10);
+    n = parseInt(n, 10);
     if (typeof n !== 'number' || isNaN(n)) {
         throw new Error('n should be a Number');
     }
@@ -8,10 +8,8 @@ var fibonacci = function(n) {
         throw new Error('n should >= 0')
     }
     if (n > 10) {
-	    throw new Error('n should <= 10');
-	}
-
-
+        throw new Error('n should <= 10');
+    }
 
     if (n === 0) {
         return 0;
@@ -22,9 +20,9 @@ var fibonacci = function(n) {
     return fibonacci(n - 1) + fibonacci(n - 2);
 };
 
-//console.log(module);
+// console.log(module);
 // module 属性
-//id, require, loaded, parent, exports, children, filename
+// id, require, loaded, parent, exports, children, filename
 
 
 if (require.main === module) {

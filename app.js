@@ -63,21 +63,21 @@ const session = require('express-session');
 // });
 
 // 使用domain 来处理异常
-app.use(function(req, res, next) {
-    let d = domain.create();
-    // 监听domain的错误事件
-    d.on('error', function(err) {
-        // 记录到日志 未实现
-        // console.error(err.messag);
-        res.statusCode = 500;
-        res.json({ sucess: false, messag: '服务器异常' });
-        d.dispose();
-    });
+// app.use(function(req, res, next) {
+//     let d = domain.create();
+//     // 监听domain的错误事件
+//     d.on('error', function(err) {
+//         // 记录到日志 未实现
+//         // console.error(err.messag);
+//         res.statusCode = 500;
+//         res.json({ sucess: false, messag: '服务器异常' });
+//         d.dispose();
+//     });
 
-    d.add(req);
-    d.add(res);
-    d.run(next);
-});
+//     d.add(req);
+//     d.add(res);
+//     d.run(next);
+// });
 
 // 发送响应头 本次请求花费时间
 app.use(responseTime());

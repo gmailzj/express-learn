@@ -75,9 +75,9 @@ router.get('/', function(req, res) {
 router.get("/test", function(req, res) {
     res.end('test');
 })
+router.get("/captcha", require("../modules/captcha").captchap);
 
 router.get("/200", function(req, res) {
-    var ok = req.params.ok;
     // throw new Error('Catch me');
     res.send('200');
 });
