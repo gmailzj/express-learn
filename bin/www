@@ -34,9 +34,9 @@ server.on('error', onError);
 server.on('listening', onListening);
 
 // 打印参数
-process.argv.forEach((val, index) => {
-    console.log(`${index}: ${val}`);
-});
+// process.argv.forEach((val, index) => {
+//     console.log(`${index}: ${val}`);
+// });
 
 // uncaughtException事件  NodeJS 进程的一个事件。
 // 如果进程里产生了一个异常而没有被任何Try Catch捕获会触发这个事件

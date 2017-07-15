@@ -1,4 +1,4 @@
-// 定义导出模块 
+// 定义导出模块
 var app = exports = module.exports = {};
 
 // 拓展功能和属性

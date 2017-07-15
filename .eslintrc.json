@@ -24,6 +24,8 @@
         "prefer-template": "off",
         "no-use-before-define": "warn",
         "object-shorthand": "off",
-        "consistent-return": "off"
+        "consistent-return": "off",
+        "no-plusplus": "off",
+        "import/no-dynamic-require": "off"
     }
 }

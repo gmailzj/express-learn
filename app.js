@@ -31,6 +31,8 @@ const routes = require('./routes/index');
 const users = require('./routes/users');
 const routeRedis = require('./routes/redis');
 const routeMysql = require('./routes/mysql');
+const routeAsync = require('./routes/async');
+
 
 // const mysql = require('mysql');
 
@@ -53,6 +55,7 @@ console.log(strftime('%B %d, %Y %H:%M:%S')); // => April 28, 2011 18:21:08
 const session = require('express-session');
 // var RedisStrore = require('connect-redis')(session);
 
+console.log(domain);
 // app.use((req, res, next) => {
 //     const reqDomain = domain.create();
 //     // next抛出的异常在这里被捕获,触发此事件
@@ -267,6 +270,7 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/redis', routeRedis);
 app.use('/mysql', routeMysql);
+app.use('/async', routeAsync);
 
 // 异常处理
 // catch 404 and forward to error handler
@@ -287,6 +291,8 @@ if (app.get('env') === 'development') {
         if (res.headersSent) {
             return next(err);
         }
+        console.log(err.message);
+        // 通用错误添加500状态码，404不用添加，上面的中间件已经添加了
         res.status(err.status || 500);
         res.render('error', {
             message: err.message,
@@ -300,7 +306,7 @@ if (app.get('env') === 'development') {
 // 如果是非开发环境，则向页面输出简单错误信息
 // production error handler
 // no stacktraces leaked to user
-app.use(function(err, req, res) {
+app.use(function(err, req, res, next) {
     // if (res.headersSent) {
     //     next(err);
     // }
@@ -308,6 +314,7 @@ app.use(function(err, req, res) {
     if (req.xhr) {
         res.status(500).send({ error: 'Something wrong!' });
     } else {
+        console.log("prod-env-error");
         res.render('error', {
             message: err.message,
             error: {}
@@ -318,7 +325,7 @@ app.use(function(err, req, res) {
 
 // 测试代码
 // NODE_ENV 如果没有设置的时候默认为 development
-// console.log(app.get("env"))
-// console.log(process.env.NODE_ENV);
-// console.log(global.app_path);
+console.log(app.get("env"))
+    // console.log(process.env.NODE_ENV);
+    // console.log(global.app_path);
 module.exports = app;

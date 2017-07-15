@@ -1,9 +1,9 @@
-// 定义导出模块 
+// 定义导出模块
 exports = module.exports = utils;
 
 
 function utils() {
-    var obj = { a: 1 }
+    let obj = { a: 1 }
     return obj;
 }
 

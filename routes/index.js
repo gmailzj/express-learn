@@ -5,37 +5,36 @@ const fs = require("fs");
 const path = require('path');
 const Eventproxy = require('eventproxy');
 const debug = require('debug')('learn:*');
-const moment = require("moment");
 const querystring = require('querystring');
 const ipip = require("../modules/ip");
+const maxmind = require('maxmind');
 
 ipip.load("/Users/zhoujian/Downloads/17monipdb/17monipdb.dat");
 // const request = require('request');
 
 // const config = require('config');
 
-const app_path = global.app_path;
+const appPath = global.app_path;
 
 // // 读取公共数据  1种是用户配置文件  2种全局变量
 // const dbConfig = config.get('Customer.dbConfig');
-// const utils = require(path.resolve(app_path, "./modules/utils"));
-var common = require(path.resolve(app_path, "./modules/common"));
+// const utils = require(path.resolve(appPath, "./modules/utils"));
+console.log(path.resolve(appPath, "./modules/utils"));
+const common = require(appPath + "/modules/common");
+
 common.config = {};
 // console.log(common);
 
 router.get("/ip2/:ip", function(req, res) {
-
-
-    var ip = req.params.ip || "14.215.177.37";
+    let ip = req.params.ip || "14.215.177.37";
     res.send(ipip.findSync(ip))
 })
 
 router.get("/ip/:ip", function(req, res) {
-    var maxmind = require('maxmind');
-    var ip = req.params.ip;
+    let ip = req.params.ip;
     maxmind.open('/Users/zhoujian/Downloads/db', (err, cityLookup) => {
         // var city = cityLookup.get('121.35.101.34');
-        var city = cityLookup.get(ip);
+        let city = cityLookup.get(ip);
         console.log(city);
         res.json(city);
     });
@@ -69,7 +68,6 @@ router.get('/', function(req, res) {
     // res.status(403).end('403 forbidden');
     // res.status(400).send('Bad Request');
     // res.status(404).sendFile('/absolute/path/to/404.png');
-
 });
 
 router.get("/test", function(req, res) {
@@ -100,18 +98,18 @@ router.get("/about", function(req, res) {
     // 其中req.body ，必须要在使用了body-parsing middleware中间件以后才有，
     // 比如 body-parser and multer.
 
-    var id = req.query.id;
+    let id = req.query.id;
 
     // console.log(id, req.query, req.body);
     if (id > 0) {
-        console.log(id)
+        // console.log(id)
     } else {
         throw new Error('Catch me');
     }
-    var obj = {};
+    let obj = {};
     obj.abd();
 
-    var o = querystring.parse('foo=bar&abc=xyz&abc=123');
+    let o = querystring.parse('foo=bar&abc=xyz&abc=123');
     console.log(typeof o);
     // 发送请求 request
     // request('http://google.com/doodle.png').pipe(fs.createWriteStream('doodle.png'))
@@ -157,14 +155,14 @@ router.get('/fs', function(req, res, next) {
         console.log(Date.now())
         return data1;
     }));
-    fs.readFile(appPath + '/t2.txt', 'utf8', proxy.done('r2', function(data2) {
+    fs.readFile(appPath + '/t3.txt', 'utf8', proxy.done('r2', function(data2) {
         console.log(Date.now())
         return data2;
     }));
     proxy.all('r1', 'r2', function(data1, data2) {
         console.log(data1, data2)
-        renderData['data1'] = data1;
-        renderData['data2'] = data2;
+        renderData.data1 = data1;
+        renderData.data2 = data2;
         res.render('fs', renderData);
     })
 
@@ -180,14 +178,15 @@ router.get('/fs2', function(req, res, next) {
 
 
     const renderData = {};
-    renderData["data1"] = '1';
-    renderData['data2'] = '2';
+    renderData.data1 = '1';
+    renderData.data2 = '2';
 
 
     ep.all('tpl', 'data', function(tpl, data) {
         // 在所有指定的事件触发后，将会被调用执行
         // 参数对应各自的事件名的最新数据
         console.log(data)
+        res.render("fs", renderData);
     });
 
     fs.readFile(appPath + '/t1.txt', 'utf-8', function(err, content) {
@@ -197,7 +196,7 @@ router.get('/fs2', function(req, res, next) {
     fs.readFile(appPath + '/t2.txt', 'utf-8', function(err, content) {
         ep.emit('data', content);
     });
-    res.render("fs", renderData);
+    // res.render("fs", renderData);
 });
 
 
