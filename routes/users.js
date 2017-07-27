@@ -6,17 +6,28 @@ const superagent = require('superagent');
 const cheerio = require('cheerio');
 const Eventproxy = require('eventproxy');
 const main = require('../main');
+const url = require("url");
 
 const router = express.Router();
 const cnodeUrl = 'https://cnodejs.org/';
 
 router.use(function(req, res, next) {
-        console.log(__filename)
-        res.setHeader('Content-Type', 'text/html; charset=utf-8');
-        next();
-    })
-    /* GET users listing. */
-router.get('/', function(req, res, next) {
+    // console.log(__filename)
+    res.setHeader('Content-Type', 'text/html; charset=utf-8');
+    next();
+})
+
+// 一个通用中间件栈，显示任何指向 /user/:id 的 HTTP 请求的信息
+// router.use(function(req, res, next) {
+//     console.log('Request URL:', req.originalUrl);
+//     next();
+// }, function(req, res, next) {
+//     console.log('Request Type:', req.method);
+//     next();
+// });
+
+/* GET users listing. */
+router.get('/', function(req, res) {
     // 使用res.write 以后不能再使用  res.send 和 res.render, 但是最终要使用res.end
     // res.write('respond with a resource');
     // res.write('respond with a resource');
@@ -103,15 +114,6 @@ router.get('/list', function(req, res, next) {
 
             res.send(items);
         });
-});
-
-// 一个中间件栈，显示任何指向 /user/:id 的 HTTP 请求的信息
-router.use(/\d+/, function(req, res, next) {
-    console.log('Request URL:', req.originalUrl);
-    next();
-}, function(req, res, next) {
-    console.log('Request Type:', req.method);
-    next();
 });
 
 // 一个中间件栈，处理指向 的 GET 请求

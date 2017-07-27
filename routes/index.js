@@ -2,7 +2,7 @@ const express = require('express');
 
 const router = express.Router();
 const fs = require("fs");
-const path = require('path');
+// const path = require('path');
 const Eventproxy = require('eventproxy');
 const debug = require('debug')('learn:*');
 const querystring = require('querystring');
@@ -19,7 +19,7 @@ const appPath = global.app_path;
 // // 读取公共数据  1种是用户配置文件  2种全局变量
 // const dbConfig = config.get('Customer.dbConfig');
 // const utils = require(path.resolve(appPath, "./modules/utils"));
-console.log(path.resolve(appPath, "./modules/utils"));
+// console.log(path.resolve(appPath, "./modules/utils"));
 const common = require(appPath + "/modules/common");
 
 common.config = {};

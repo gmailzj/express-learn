@@ -55,7 +55,7 @@ console.log(strftime('%B %d, %Y %H:%M:%S')); // => April 28, 2011 18:21:08
 const session = require('express-session');
 // var RedisStrore = require('connect-redis')(session);
 
-console.log(domain);
+domain.toString();
 // app.use((req, res, next) => {
 //     const reqDomain = domain.create();
 //     // next抛出的异常在这里被捕获,触发此事件
@@ -257,13 +257,22 @@ app.use(function(req, res, next) {
 
 // 设置路由信息
 
-// 所有的请求都要通过个中间件
+// 通用中间件栈 所有的请求都要通过个中间件
 app.use(function(req, res, next) {
-    res.setHeader('ver', '1.0.0');
-    // 设置编码
-    // res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        res.setHeader('ver', '1.0.0');
+        // 设置编码
+        // res.setHeader('Content-Type', 'text/html; charset=utf-8');
+        next();
+    })
+    // 通用中间件栈
+app.use(function(req, res, next) {
+    console.log('Request URL:', req.originalUrl);
     next();
-})
+}, function(req, res, next) {
+    console.log('Request Type:', req.method);
+    next();
+});
+
 
 // 配置路由
 app.use('/', routes);
@@ -325,7 +334,7 @@ app.use(function(err, req, res, next) {
 
 // 测试代码
 // NODE_ENV 如果没有设置的时候默认为 development
-console.log(app.get("env"))
-    // console.log(process.env.NODE_ENV);
-    // console.log(global.app_path);
+// console.log(app.get("env"))
+// console.log(process.env.NODE_ENV);
+// console.log(global.app_path);
 module.exports = app;

@@ -1,4 +1,4 @@
-var http = require('http');
+const http = require('http');
 
 // process.on('uncaughtException', function(err) {
 //     //打印出错误
